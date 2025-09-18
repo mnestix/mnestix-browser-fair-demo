@@ -22,7 +22,7 @@ export function ChatbotButton() {
 
     // Generate a unique session ID based on AAS ID and component instance
     const sessionId = useMemo(() => {
-        const aasId = aas?.id || 'unknown';
+        const aasId = aas?.id;
         const timestamp = Date.now();
         const randomSuffix = Math.random().toString(36).substring(2, 8);
         return `${aasId}-${timestamp}-${randomSuffix}`;
@@ -358,7 +358,7 @@ export function ChatbotButton() {
                             placeholder={t('inputPlaceholder')}
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            onKeyPress={handleKeyPress}
+                            onKeyUp={handleKeyPress}
                             disabled={isLoading}
                             multiline
                             maxRows={3}
