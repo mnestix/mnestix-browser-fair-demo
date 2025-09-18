@@ -13,6 +13,8 @@ Mnestix provides the following configuration options. You can adapt the values i
 | `SUBMODEL_REGISTRY_API_URL`        |               | Address of the Submodel Registry Service to retrieve the related descriptor for a Submodel                                                       |
 | `MNESTIX_AAS_GENERATOR_API_URL`    |               | Mnestix Aas Generator with a lot of business comfort features to create AAS via templates                                                        |
 | `CONCEPT_DESCRIPTION_REPO_API_URL` |               | Default Concept Description Repository                                                                                                           |
+| `N8N_API_URL`                      |               | URL to the n8n instance for the AAS chatbot functionality                                                                                        |
+| `N8N_API_KEY`                      |               | API key for authenticating with the n8n instance (optional, depends on your n8n setup)                                                           |
 | `LOG_LEVEL`                        | "info"        | Server side log level of Mnestix Browser. "fatal" or "error" or "warn" or "info" or "debug" or "trace" or "silent"                               |
 | `MNESTIX_V2_ENABLED`               | "true"        | Setting to 'false' to support older Mnestix API versions (v1._._), the support for those Mnestix API versions will be stopped in the near future |
 

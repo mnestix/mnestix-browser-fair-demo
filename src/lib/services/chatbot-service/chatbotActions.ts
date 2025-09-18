@@ -4,6 +4,7 @@ import { ApiResponseWrapper, wrapErrorCode, wrapSuccess } from 'lib/util/apiResp
 import { ApiResultStatus } from 'lib/util/apiResponseWrapper/apiResultStatus';
 import { createRequestLogger, logInfo } from 'lib/util/Logger';
 import { headers } from 'next/headers';
+import { envs } from 'lib/env/MnestixEnv';
 
 export type ChatbotResponse = {
     output: string;
@@ -25,6 +26,14 @@ export async function sendChatMessage(
     });
 
     try {
+        const n8nApiUrl = envs.N8N_API_URL;
+        if (!n8nApiUrl) {
+            return wrapErrorCode(
+                ApiResultStatus.INTERNAL_SERVER_ERROR,
+                'N8N_API_URL environment variable is not configured',
+            );
+        }
+
         const requestBody: any = {
             chatInput,
             sessionId,
@@ -38,17 +47,18 @@ export async function sendChatMessage(
             });
         }
 
-        const response = await fetch('https://n8n.demo.xitaso.es/webhook/mnestix', {
+        const response = await fetch(n8nApiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                ApiKey: envs.N8N_API_KEY || '',
             },
             body: JSON.stringify(requestBody),
         });
 
         logger.debug(
             {
-                Request_Url: 'https://n8n.demo.xitaso.es/webhook/mnestix',
+                Request_Url: n8nApiUrl,
                 Http_Status: response?.status,
                 Http_Message: response?.statusText,
             },

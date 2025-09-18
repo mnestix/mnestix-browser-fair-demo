@@ -174,7 +174,7 @@ export function AASViewer() {
                                     {t('actions.download')}
                                 </Button>
                             )}
-                            <ChatbotButton />
+                            {env.N8N_API_URL && <ChatbotButton />}
                         </Box>
                         <AASOverviewCard
                             aas={aas ?? null}
