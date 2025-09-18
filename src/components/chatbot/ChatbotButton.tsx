@@ -158,13 +158,6 @@ export function ChatbotButton() {
                         </IconButton>
                     </Box>
 
-                    {/* Session ID indicator for development */}
-                    <Box sx={{ px: 2, py: 1, backgroundColor: 'grey.50' }}>
-                        <Typography variant="caption" color="text.secondary">
-                            Session: {sessionId}
-                        </Typography>
-                    </Box>
-
                     {/* Chat Messages */}
                     <Box
                         ref={chatContainerRef}
@@ -356,7 +349,9 @@ export function ChatbotButton() {
                     </Box>
 
                     {/* Message Input */}
-                    <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'grey.300', display: 'flex', gap: 1 }}>
+                    <Box
+                        sx={{ px: 2, pt: 2, borderTop: '1px solid', borderColor: 'grey.300', display: 'flex', gap: 1 }}
+                    >
                         <TextField
                             fullWidth
                             variant="outlined"
@@ -378,6 +373,22 @@ export function ChatbotButton() {
                         >
                             <Send />
                         </IconButton>
+                    </Box>
+
+                    {/* AI Disclaimer */}
+                    <Box sx={{ px: 2, pb: 1 }}>
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            sx={{
+                                fontSize: '0.75rem',
+                                fontStyle: 'italic',
+                                display: 'block',
+                                textAlign: 'left',
+                            }}
+                        >
+                            {t('disclaimer')}
+                        </Typography>
                     </Box>
                 </Paper>
             </Collapse>
