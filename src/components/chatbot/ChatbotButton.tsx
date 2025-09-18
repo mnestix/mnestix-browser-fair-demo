@@ -169,9 +169,7 @@ export function ChatbotButton() {
                         }}
                     >
                         {chatHistory.length === 0 ? (
-                            <Typography color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                                {t('placeholder')}
-                            </Typography>
+                            <Typography color="text.secondary">{t('placeholder')}</Typography>
                         ) : (
                             chatHistory.map((entry, index) => (
                                 <Box key={index} sx={{ mb: 2 }}>
