@@ -381,8 +381,7 @@ export function ChatbotButton() {
                             variant="caption"
                             color="text.secondary"
                             sx={{
-                                fontSize: '0.75rem',
-                                fontStyle: 'italic',
+                                fontSize: '0.6rem',
                                 display: 'block',
                                 textAlign: 'left',
                             }}
