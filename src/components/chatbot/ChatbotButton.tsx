@@ -1,12 +1,12 @@
 'use client';
 
 import { Box, Fab, Paper, IconButton, TextField, Typography, CircularProgress, Collapse } from '@mui/material';
-import { Chat, Send, Close, Minimize } from '@mui/icons-material';
+import { Chat, Send, Close } from '@mui/icons-material';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { sendChatMessage, ChatbotResponse } from 'lib/services/chatbot-service/chatbotActions';
+import { sendChatMessage } from 'lib/services/chatbot-service/chatbotActions';
 import { useNotificationSpawner } from 'lib/hooks/UseNotificationSpawner';
 import { useCurrentAasContext } from 'components/contexts/CurrentAasContext';
 
@@ -87,7 +87,7 @@ export function ChatbotButton() {
                     severity: 'error',
                 });
             }
-        } catch (error) {
+        } catch {
             setChatHistory((prev) => [...prev, { type: 'bot', message: t('responses.errorResponse') }]);
             spawn({
                 title: t('errors.title'),

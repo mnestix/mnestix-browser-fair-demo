@@ -14,7 +14,9 @@ export type ChatbotResponse = {
 export async function sendChatMessage(
     chatInput: string,
     sessionId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     aasContext?: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     submodelsContext?: any[],
 ): Promise<ApiResponseWrapper<ChatbotResponse>> {
     const logger = createRequestLogger(await headers());
@@ -33,19 +35,11 @@ export async function sendChatMessage(
                 'N8N_API_URL environment variable is not configured',
             );
         }
-
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const requestBody: any = {
             chatInput,
             sessionId,
         };
-
-        // Add context data if available
-        if (aasContext || submodelsContext) {
-            requestBody.contextString = JSON.stringify({
-                aas: aasContext,
-                submodels: submodelsContext,
-            });
-        }
 
         const response = await fetch(n8nApiUrl, {
             method: 'POST',
