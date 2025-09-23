@@ -41,6 +41,8 @@ services:
       SUBMODEL_REPO_API_URL: 'http://mnestix-proxy:5065/repo'
       DISCOVERY_API_URL: 'http://mnestix-proxy:5065/discovery'
       MNESTIX_AAS_GENERATOR_API_URL: 'http://mnestix-proxy:5065'
+      N8N_API_URL: '' # Your N8N Workflow
+      N8N_API_KEY: '' # Your N8N API Key
       AUTHENTICATION_FEATURE_FLAG: 'true'
       NEXTAUTH_URL: 'http://mnestix-browser:3000/'
       KEYCLOAK_ENABLED: 'true'
