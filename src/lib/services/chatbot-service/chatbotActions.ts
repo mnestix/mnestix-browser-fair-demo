@@ -39,6 +39,8 @@ export async function sendChatMessage(
         const requestBody: any = {
             chatInput,
             sessionId,
+            aasId: aasContext?.id || null,
+            submodelIds: submodelsContext?.map((submodel) => submodel.id) || [],
         };
 
         const response = await fetch(n8nApiUrl, {
