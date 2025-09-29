@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import ListHeader from 'components/basics/ListHeader';
 import AasListDataWrapper from './_components/AasListDataWrapper';
 import { useTranslations } from 'next-intl';
+import { ChatbotButton } from 'components/chatbot/ChatbotButton';
 
 export default function Page() {
     const t = useTranslations('pages.aasList');
@@ -15,6 +16,7 @@ export default function Page() {
                 </Box>
                 <AasListDataWrapper />
             </Box>
+            <ChatbotButton />
         </Box>
     );
 }

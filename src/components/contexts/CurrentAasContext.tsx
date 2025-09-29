@@ -29,7 +29,7 @@ const CurrentAasContext = createContext<CurrentAasContextType | undefined>(undef
 export function useCurrentAasContext() {
     const context = useContext(CurrentAasContext);
     if (!context) {
-        throw new Error('useCurrentAasContext must be used within a CurrentAasContextProvider');
+        return {};
     }
     return {
         aas: context.aasState[0],

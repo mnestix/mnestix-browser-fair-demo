@@ -15,16 +15,17 @@ export async function sendChatMessage(
     chatInput: string,
     sessionId: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    aasContext?: any,
+    aas?: any,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    submodelsContext?: any[],
+    submodels?: any[],
+    aasOriginUrl?: string,
 ): Promise<ApiResponseWrapper<ChatbotResponse>> {
     const logger = createRequestLogger(await headers());
     logInfo(logger, 'sendChatMessage', 'Sending message to chatbot', {
         messageLength: chatInput.length,
         sessionId,
-        hasAasContext: !!aasContext,
-        submodelsCount: submodelsContext?.length || 0,
+        hasAasContext: !!aas,
+        submodelsCount: submodels?.length || 0,
     });
 
     try {
@@ -39,8 +40,9 @@ export async function sendChatMessage(
         const requestBody: any = {
             chatInput,
             sessionId,
-            aasId: aasContext?.id || null,
-            submodelIds: submodelsContext?.map((submodel) => submodel.id) || [],
+            aasId: aas?.id || null,
+            submodelIds: submodels?.map((submodel) => submodel.id) || [],
+            baseUrl: aasOriginUrl || null,
         };
 
         const response = await fetch(n8nApiUrl, {

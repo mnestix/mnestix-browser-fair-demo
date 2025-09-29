@@ -17,7 +17,8 @@ export function ChatbotButton() {
     const [chatHistory, setChatHistory] = useState<Array<{ type: 'user' | 'bot'; message: string }>>([]);
     const { spawn } = useNotificationSpawner();
     const t = useTranslations('components.chatbot');
-    const { aas, submodels } = useCurrentAasContext();
+    const context = useCurrentAasContext();
+    const { aas, submodels, aasOriginUrl } = context || {};
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
     // Generate a unique session ID based on AAS ID and component instance
@@ -66,11 +67,11 @@ export function ChatbotButton() {
 
         try {
             // Prepare context data - only send actual submodel data, not errors
-            const submodelsData = submodels
-                ?.filter((sm) => sm.submodel) // Only include submodels that loaded successfully
+            const submodelsData = (submodels ?? [])
+                .filter((sm) => sm.submodel) // Only include submodels that loaded successfully
                 .map((sm) => sm.submodel);
 
-            const response = await sendChatMessage(userMessage, sessionId, aas, submodelsData);
+            const response = await sendChatMessage(userMessage, sessionId, aas, submodelsData, aasOriginUrl);
 
             if (response.isSuccess) {
                 // Add bot response to chat history

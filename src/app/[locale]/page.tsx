@@ -16,6 +16,7 @@ import { useAasStore } from 'stores/AasStore';
 import { useRouter } from 'next/navigation';
 import { useIsMobile } from 'lib/hooks/UseBreakpoints';
 import { useEnv } from 'app/EnvProvider';
+import { ChatbotButton } from 'components/chatbot/ChatbotButton';
 
 export default function () {
     const t = useTranslations('pages.dashboard');
@@ -97,6 +98,7 @@ export default function () {
                     </Grid>
                 </Grid>
             </Box>
+            <ChatbotButton />
         </Box>
     );
 }
