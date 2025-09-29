@@ -62,7 +62,7 @@ export function ProductViewer() {
         }
     }, [submodels]);
 
-    const nameplate = findSubmodelByIdOrSemanticId(submodels, SubmodelSemanticIdEnum.NameplateV2, 'Nameplate');
+    const nameplate = findSubmodelByIdOrSemanticId(submodels ?? [], SubmodelSemanticIdEnum.NameplateV2, 'Nameplate');
 
     if (nameplate) {
         const productBreadcrumbProperties = [
