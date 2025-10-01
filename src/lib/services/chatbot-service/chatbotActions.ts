@@ -19,6 +19,7 @@ export async function sendChatMessage(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     submodels?: any[],
     aasOriginUrl?: string,
+    userLanguage?: string,
 ): Promise<ApiResponseWrapper<ChatbotResponse>> {
     const logger = createRequestLogger(await headers());
     logInfo(logger, 'sendChatMessage', 'Sending message to chatbot', {
@@ -49,6 +50,7 @@ export async function sendChatMessage(
                     });
                 }) || [],
             baseUrl: aasOriginUrl || null,
+            userLanguage: userLanguage || null,
         };
 
         const response = await fetch(n8nApiUrl, {

@@ -79,16 +79,16 @@ export function ChatbotButton() {
         const naturalVoice = languageVoices.find((voice) => {
             const nameLower = voice.name.toLowerCase();
             return (
-            nameLower.includes('samantha') ||
-            nameLower.includes('alex') ||
-            nameLower.includes('daniel') ||
-            nameLower.includes('fiona') ||
-            nameLower.includes('karen') ||
-            nameLower.includes('tessa') ||
-            nameLower.includes('monica') ||
-            nameLower.includes('paulina') ||
-            nameLower.includes('anna') ||
-            nameLower.includes('helena')
+                nameLower.includes('samantha') ||
+                nameLower.includes('alex') ||
+                nameLower.includes('daniel') ||
+                nameLower.includes('fiona') ||
+                nameLower.includes('karen') ||
+                nameLower.includes('tessa') ||
+                nameLower.includes('monica') ||
+                nameLower.includes('paulina') ||
+                nameLower.includes('anna') ||
+                nameLower.includes('helena')
             );
         });
         if (naturalVoice) return naturalVoice;
@@ -164,7 +164,7 @@ export function ChatbotButton() {
                 .filter((sm) => sm.submodel) // Only include submodels that loaded successfully
                 .map((sm) => sm.submodel);
 
-            const response = await sendChatMessage(userMessage, sessionId, aas, submodelsData, aasOriginUrl);
+            const response = await sendChatMessage(userMessage, sessionId, aas, submodelsData, aasOriginUrl, locale);
 
             if (response.isSuccess) {
                 // Add bot response to chat history
