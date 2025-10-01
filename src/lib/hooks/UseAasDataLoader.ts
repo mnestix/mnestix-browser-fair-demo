@@ -59,22 +59,37 @@ export function useAasLoader(context: CurrentAasContextType, aasIdToLoad: string
     async function fetchSubmodels(infrastructureName: string) {
         setIsLoadingSubmodels(true);
         if (aasFromContext?.submodels) {
-            await Promise.all(
-                aasFromContext.submodels.map(async (smRef, i) => {
-                    const newSm = await fetchSingleSubmodel(
-                        smRef,
-                        infrastructureName,
-                        registryAasData?.submodelDescriptors?.[i],
-                    );
-                    setSubmodels((submodels) => {
-                        const exists = submodels.some((sm) => sm.id === newSm.id);
-                        if (exists) return submodels;
-                        if (env.WHITELIST_FEATURE_FLAG && newSm.submodel && !whitelistContains(newSm.submodel))
-                            return submodels;
-                        return [...submodels, newSm];
-                    });
-                }),
+            const sm_promises: Promise<SubmodelOrIdReference>[] = [];
+            aasFromContext.submodels.map(async (smRef, i) => {
+                const newSm_promise = fetchSingleSubmodel(
+                    smRef,
+                    infrastructureName,
+                    registryAasData?.submodelDescriptors?.[i],
+                );
+                sm_promises.push(newSm_promise);
+            });
+
+            const updatePromises = sm_promises.map((smPromise) =>
+                smPromise
+                    .then((newSm) => {
+                        setSubmodels((currentSubmodels) => {
+                            if (currentSubmodels.some((sm) => sm.id === newSm.id)) {
+                                return currentSubmodels;
+                            }
+                            if (
+                                env.WHITELIST_FEATURE_FLAG &&
+                                newSm.submodel &&
+                                !whitelistContains(newSm.submodel)
+                            ) {
+                                return currentSubmodels;
+                            }
+                            return [...currentSubmodels, newSm];
+                        });
+                    })
+                    .catch(() => undefined)
             );
+
+            await Promise.allSettled(updatePromises);
         }
         setIsLoadingSubmodels(false);
     }
