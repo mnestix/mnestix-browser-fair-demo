@@ -179,7 +179,10 @@
         "title": "Chatbot-Fehler",
         "unknownError": "Ein unbekannter Fehler ist aufgetreten.",
         "networkError": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
-      }
+      },
+      "startListening": "Start voice input",
+      "stopListening": "Stop voice input",
+      "sendMessage": "Send message"
     }
   },
   "navigation": {

@@ -179,7 +179,10 @@
         "title": "Error del Chatbot",
         "unknownError": "Ha ocurrido un error desconocido.",
         "networkError": "Error de red. Por favor, verifica tu conexión e inténtalo de nuevo."
-      }
+      },
+      "startListening": "Start voice input",
+      "stopListening": "Stop voice input",
+      "sendMessage": "Send message"
     }
   },
   "navigation": {

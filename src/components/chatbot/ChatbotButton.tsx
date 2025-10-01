@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Fab, Paper, IconButton, TextField, Typography, CircularProgress, Collapse } from '@mui/material';
-import { Chat, Send, Close } from '@mui/icons-material';
+import { Chat, Send, Close, Mic, MicOff } from '@mui/icons-material';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import ReactMarkdown from 'react-markdown';
@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 import { sendChatMessage } from 'lib/services/chatbot-service/chatbotActions';
 import { useNotificationSpawner } from 'lib/hooks/UseNotificationSpawner';
 import { useCurrentAasContext } from 'components/contexts/CurrentAasContext';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 export function ChatbotButton() {
     const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,14 @@ export function ChatbotButton() {
     const context = useCurrentAasContext();
     const { aas, submodels, aasOriginUrl } = context || {};
     const chatContainerRef = useRef<HTMLDivElement>(null);
+    const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+
+    // Sync transcript to message field
+    useEffect(() => {
+        if (transcript) {
+            setMessage(transcript);
+        }
+    }, [transcript]);
 
     // Generate a unique session ID based on AAS ID and component instance
     const sessionId = useMemo(() => {
@@ -56,6 +65,7 @@ export function ChatbotButton() {
     };
 
     const handleSendMessage = async () => {
+        stopListening();
         if (!message.trim() || isLoading) return;
 
         const userMessage = message.trim();
@@ -106,6 +116,23 @@ export function ChatbotButton() {
             handleSendMessage();
         }
     };
+
+    function startListening() {
+        resetTranscript();
+        SpeechRecognition.startListening({ continuous: true });
+    }
+
+    function stopListening() {
+        SpeechRecognition.stopListening();
+    }
+
+    function toggleListening() {
+        if (listening) {
+            stopListening();
+        } else {
+            startListening();
+        }
+    }
 
     return (
         <>
@@ -364,11 +391,23 @@ export function ChatbotButton() {
                             size="small"
                             data-testid="chatbot-input"
                         />
+                        {browserSupportsSpeechRecognition && (
+                            <IconButton
+                                color={listening ? 'error' : 'default'}
+                                onClick={toggleListening}
+                                disabled={isLoading}
+                                data-testid="chatbot-mic-button"
+                                aria-label={listening ? t('stopListening') : t('startListening')}
+                            >
+                                {listening ? <MicOff /> : <Mic />}
+                            </IconButton>
+                        )}
                         <IconButton
                             color="primary"
                             onClick={handleSendMessage}
                             disabled={!message.trim() || isLoading}
                             data-testid="chatbot-send-button"
+                            aria-label={t('sendMessage')}
                         >
                             <Send />
                         </IconButton>
