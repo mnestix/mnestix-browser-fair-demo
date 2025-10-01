@@ -256,14 +256,17 @@ export function ChatbotButton() {
             speechSynthesisRef.current = null;
         };
 
-        utterance.onerror = function handleSpeechError() {
+        utterance.onerror = function handleSpeechError(event: SpeechSynthesisErrorEvent) {
+            console.log(event.error);
             setSpeakingIndex(null);
             speechSynthesisRef.current = null;
-            spawn({
-                title: t('errors.title'),
-                message: t('errors.ttsError'),
-                severity: 'error',
-            });
+            if (event.error != 'interrupted') {
+                spawn({
+                    title: t('errors.title'),
+                    message: t('errors.ttsError'),
+                    severity: 'error',
+                });
+            }
         };
 
         speechSynthesisRef.current = utterance;
