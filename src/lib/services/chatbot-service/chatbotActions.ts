@@ -41,7 +41,13 @@ export async function sendChatMessage(
             chatInput,
             sessionId,
             aasId: aas?.id || null,
-            submodelIds: submodels?.map((submodel) => submodel.id) || [],
+            submodelIds:
+                submodels?.map((submodel) => {
+                    return JSON.stringify({
+                        id: submodel.id,
+                        id_short: submodel.idShort,
+                    });
+                }) || [],
             baseUrl: aasOriginUrl || null,
         };
 
