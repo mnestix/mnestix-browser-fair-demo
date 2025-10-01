@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 import { sendChatMessage } from 'lib/services/chatbot-service/chatbotActions';
 import { useNotificationSpawner } from 'lib/hooks/UseNotificationSpawner';
 import { useCurrentAasContext } from 'components/contexts/CurrentAasContext';
+import { useIsMobile } from 'lib/hooks/UseBreakpoints';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 export function ChatbotButton() {
@@ -26,6 +27,7 @@ export function ChatbotButton() {
     const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
     const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
     const [isVoiceLoaded, setVoiceLoaded] = useState(false);
+    const isMobile = useIsMobile();
 
     window.speechSynthesis.onvoiceschanged = function () {
         setVoiceLoaded(window.speechSynthesis.getVoices().length > 0);
@@ -302,6 +304,7 @@ export function ChatbotButton() {
                     bottom: 24,
                     right: 24,
                     zIndex: 1000,
+                    display: isOpen && isMobile ? 'none' : 'flex', // Hide on mobile when chat is open
                 }}
                 onClick={toggleChat}
                 data-testid="chatbot-fab"
@@ -314,11 +317,24 @@ export function ChatbotButton() {
                 <Paper
                     sx={{
                         position: 'fixed',
-                        bottom: 90,
-                        right: 24,
-                        width: 400,
-                        height: 500,
-                        zIndex: 999,
+                        ...(isMobile
+                            ? {
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  width: '100vw',
+                                  height: '100dvh', // Use dynamic viewport height
+                                  borderRadius: 0,
+                                  zIndex: 1300,
+                              }
+                            : {
+                                  bottom: 90,
+                                  right: 24,
+                                  width: 400,
+                                  height: 500,
+                                  zIndex: 999,
+                              }),
                         display: 'flex',
                         flexDirection: 'column',
                         boxShadow: 3,
@@ -336,6 +352,7 @@ export function ChatbotButton() {
                             alignItems: 'center',
                             backgroundColor: 'primary.main',
                             color: 'primary.contrastText',
+                            flexShrink: 0, // Prevent header from shrinking
                         }}
                     >
                         <Typography variant="h6">{t('title')}</Typography>
@@ -352,6 +369,7 @@ export function ChatbotButton() {
                             overflowY: 'auto',
                             p: 2,
                             backgroundColor: 'grey.50',
+                            minHeight: 0, // Allow flex child to shrink
                         }}
                     >
                         {chatHistory.length === 0 ? (
@@ -556,7 +574,19 @@ export function ChatbotButton() {
 
                     {/* Message Input */}
                     <Box
-                        sx={{ px: 2, pt: 2, borderTop: '1px solid', borderColor: 'grey.300', display: 'flex', gap: 1 }}
+                        sx={{
+                            px: 2,
+                            pt: 2,
+                            borderTop: '1px solid',
+                            borderColor: 'grey.300',
+                            display: 'flex',
+                            gap: 1,
+                            flexShrink: 0, // Prevent input area from shrinking
+                            backgroundColor: 'background.paper', // Ensure solid background
+                            ...(isMobile && {
+                                pb: 'max(env(safe-area-inset-bottom), 8px)', // Add safe area padding for mobile
+                            }),
+                        }}
                     >
                         <TextField
                             fullWidth
@@ -594,7 +624,16 @@ export function ChatbotButton() {
                     </Box>
 
                     {/* AI Disclaimer */}
-                    <Box sx={{ px: 2, pb: 1 }}>
+                    <Box
+                        sx={{
+                            px: 2,
+                            pb: 1,
+                            flexShrink: 0,
+                            ...(isMobile && {
+                                pb: 'max(env(safe-area-inset-bottom), 8px)',
+                            }),
+                        }}
+                    >
                         <Typography
                             variant="caption"
                             color="text.secondary"
