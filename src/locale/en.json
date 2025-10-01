@@ -178,11 +178,13 @@
       "errors": {
         "title": "Chatbot Error",
         "unknownError": "An unknown error occurred.",
-        "networkError": "Network error. Please check your connection and try again."
+        "networkError": "Network error. Please check your connection and try again.",
+        "ttsError": "An error occurred with the text-to-speech output. Please reload the page."
       },
       "startListening": "Start voice input",
       "stopListening": "Stop voice input",
-      "sendMessage": "Send message"
+      "sendMessage": "Send message",
+      "chatbot-greeting": "Hi I am your personal assistant, how can I help you?"
     }
   },
   "navigation": {

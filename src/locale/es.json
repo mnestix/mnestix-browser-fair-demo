@@ -178,11 +178,13 @@
       "errors": {
         "title": "Error del Chatbot",
         "unknownError": "Ha ocurrido un error desconocido.",
-        "networkError": "Error de red. Por favor, verifica tu conexión e inténtalo de nuevo."
+        "networkError": "Error de red. Por favor, verifica tu conexión e inténtalo de nuevo.",
+        "ttsError": "Se produjo un error con la salida de texto a voz. Por favor, recarga la página."
       },
-      "startListening": "Start voice input",
-      "stopListening": "Stop voice input",
-      "sendMessage": "Send message"
+      "startListening": "Iniciar entrada de voz",
+      "stopListening": "Detener entrada de voz",
+      "sendMessage": "Enviar mensaje",
+      "chatbot-greeting": "Hola, soy tu asistente personal, ¿cómo puedo ayudarte?"
     }
   },
   "navigation": {

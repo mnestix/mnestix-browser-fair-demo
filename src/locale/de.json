@@ -178,11 +178,13 @@
       "errors": {
         "title": "Chatbot-Fehler",
         "unknownError": "Ein unbekannter Fehler ist aufgetreten.",
-        "networkError": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+        "networkError": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+        "ttsError": "Ein Fehler bei der Text zu Sprache Ausgabe ist aufgetreten. Bitte laden sie die Seite neu."
       },
-      "startListening": "Start voice input",
-      "stopListening": "Stop voice input",
-      "sendMessage": "Send message"
+      "startListening": "Spracheingabe starten",
+      "stopListening": "Spracheingabe beenden",
+      "sendMessage": "Nachricht senden",
+      "chatbot-greeting": "Hallo, ich bin Ihr persönlicher Assistent. Wie kann ich Ihnen helfen?"
     }
   },
   "navigation": {
