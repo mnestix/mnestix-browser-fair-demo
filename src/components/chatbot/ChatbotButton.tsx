@@ -11,6 +11,10 @@ import { useNotificationSpawner } from 'lib/hooks/UseNotificationSpawner';
 import { useCurrentAasContext } from 'components/contexts/CurrentAasContext';
 import { useIsMobile } from 'lib/hooks/UseBreakpoints';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { searchInAllDiscoveries } from 'lib/services/discovery-service/discoveryActions';
+import { useRouter } from 'next/navigation';
+import { searchAasInAllRepositories } from 'lib/services/aas-repository-service/aasRepositoryActions';
+import { encodeBase64 } from 'lib/util/Base64Util';
 
 const DEFAULT_WIDTH = 400;
 const DEFAULT_HEIGHT = 500;
@@ -38,6 +42,7 @@ export function ChatbotButton() {
     const [isVoiceLoaded, setVoiceLoaded] = useState(false);
     const isMobile = useIsMobile();
     const resizeStartRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
+    const router = useRouter();
 
     window.speechSynthesis.onvoiceschanged = function () {
         setVoiceLoaded(window.speechSynthesis.getVoices().length > 0);
@@ -364,6 +369,35 @@ export function ChatbotButton() {
         };
     }, [isResizing]);
 
+    async function handleLinkClick(event: React.MouseEvent<HTMLAnchorElement>, href: string) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Check if the link exists in the same repository as the "parent AAS"
+        const { isSuccess: discoverySuccess, result: discoverySearchResult } = await searchInAllDiscoveries(href);
+
+        if (!discoverySuccess || (discoverySuccess && discoverySearchResult.length === 0)) {
+            const { isSuccess: repositorySuccess, result: repositorySearchResult } = await searchAasInAllRepositories(
+                encodeBase64(href),
+            );
+            if (repositorySuccess && repositorySearchResult.length !== 0) {
+                router.push('/asset?aasId=' + encodeURIComponent(href));
+                return;
+            }
+            // Link not found in discovery - open external URL
+            const popup = window.open('');
+            if (popup) {
+                popup.location.href = href;
+            } else {
+                // Popup blocked - open in same tab
+                router.push(href);
+            }
+        } else {
+            // Link found in discovery - navigate internally
+            router.push('/asset?assetId=' + encodeURIComponent(href));
+        }
+    }
+
     return (
         <>
             {/* Floating Chat Button */}
@@ -620,6 +654,23 @@ export function ChatbotButton() {
                                                                 p: 1,
                                                                 border: '1px solid',
                                                                 borderColor: 'grey.300',
+                                                            }}
+                                                        >
+                                                            {children}
+                                                        </Typography>
+                                                    ),
+                                                    a: ({ href, children }) => (
+                                                        <Typography
+                                                            component="a"
+                                                            href={href}
+                                                            onClick={(e) => href && handleLinkClick(e, href)}
+                                                            sx={{
+                                                                color: 'primary.main',
+                                                                textDecoration: 'underline',
+                                                                cursor: 'pointer',
+                                                                '&:hover': {
+                                                                    color: 'primary.dark',
+                                                                },
                                                             }}
                                                         >
                                                             {children}
