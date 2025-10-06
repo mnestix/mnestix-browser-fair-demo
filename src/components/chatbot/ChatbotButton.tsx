@@ -12,12 +12,21 @@ import { useCurrentAasContext } from 'components/contexts/CurrentAasContext';
 import { useIsMobile } from 'lib/hooks/UseBreakpoints';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
+const DEFAULT_WIDTH = 400;
+const DEFAULT_HEIGHT = 500;
+const MIN_WIDTH = 300;
+const MIN_HEIGHT = 400;
+const MAX_WIDTH = 2000;
+const MAX_HEIGHT = 1200;
+
 export function ChatbotButton() {
     const [isOpen, setIsOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [chatHistory, setChatHistory] = useState<Array<{ type: 'user' | 'bot'; message: string }>>([]);
     const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
+    const [windowSize, setWindowSize] = useState({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
+    const [isResizing, setIsResizing] = useState(false);
     const { spawn } = useNotificationSpawner();
     const t = useTranslations('components.chatbot');
     const locale = useLocale();
@@ -28,6 +37,7 @@ export function ChatbotButton() {
     const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
     const [isVoiceLoaded, setVoiceLoaded] = useState(false);
     const isMobile = useIsMobile();
+    const resizeStartRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
 
     window.speechSynthesis.onvoiceschanged = function () {
         setVoiceLoaded(window.speechSynthesis.getVoices().length > 0);
@@ -294,6 +304,66 @@ export function ChatbotButton() {
         }
     }, [isOpen]);
 
+    // Load saved window size from localStorage
+    useEffect(() => {
+        const savedSize = localStorage.getItem('chatbot-window-size');
+        if (savedSize) {
+            try {
+                const parsed = JSON.parse(savedSize);
+                setWindowSize({
+                    width: Math.min(Math.max(parsed.width, MIN_WIDTH), MAX_WIDTH),
+                    height: Math.min(Math.max(parsed.height, MIN_HEIGHT), MAX_HEIGHT),
+                });
+            } catch {
+                // Ignore invalid saved size
+            }
+        }
+    }, []);
+
+    // Save window size to localStorage
+    useEffect(() => {
+        if (!isMobile) {
+            localStorage.setItem('chatbot-window-size', JSON.stringify(windowSize));
+        }
+    }, [windowSize, isMobile]);
+
+    function handleResizeStart(e: React.MouseEvent) {
+        e.preventDefault();
+        setIsResizing(true);
+        resizeStartRef.current = {
+            x: e.clientX,
+            y: e.clientY,
+            width: windowSize.width,
+            height: windowSize.height,
+        };
+    }
+
+    useEffect(() => {
+        if (!isResizing) return;
+
+        function handleResizeMove(e: MouseEvent) {
+            const deltaX = resizeStartRef.current.x - e.clientX;
+            const deltaY = e.clientY - resizeStartRef.current.y;
+
+            const newWidth = Math.min(Math.max(resizeStartRef.current.width + deltaX, MIN_WIDTH), MAX_WIDTH);
+            const newHeight = Math.min(Math.max(resizeStartRef.current.height - deltaY, MIN_HEIGHT), MAX_HEIGHT);
+
+            setWindowSize({ width: newWidth, height: newHeight });
+        }
+
+        function handleResizeEnd() {
+            setIsResizing(false);
+        }
+
+        document.addEventListener('mousemove', handleResizeMove);
+        document.addEventListener('mouseup', handleResizeEnd);
+
+        return function cleanup() {
+            document.removeEventListener('mousemove', handleResizeMove);
+            document.removeEventListener('mouseup', handleResizeEnd);
+        };
+    }, [isResizing]);
+
     return (
         <>
             {/* Floating Chat Button */}
@@ -304,7 +374,7 @@ export function ChatbotButton() {
                     bottom: 24,
                     right: 24,
                     zIndex: 1000,
-                    display: isOpen && isMobile ? 'none' : 'flex', // Hide on mobile when chat is open
+                    display: isOpen && isMobile ? 'none' : 'flex',
                 }}
                 onClick={toggleChat}
                 data-testid="chatbot-fab"
@@ -324,20 +394,21 @@ export function ChatbotButton() {
                                   right: 0,
                                   bottom: 0,
                                   width: '100vw',
-                                  height: '100dvh', // Use dynamic viewport height
+                                  height: '100dvh',
                                   borderRadius: 0,
                                   zIndex: 1300,
                               }
                             : {
                                   bottom: 90,
                                   right: 24,
-                                  width: 400,
-                                  height: 500,
+                                  width: windowSize.width,
+                                  height: windowSize.height,
                                   zIndex: 999,
                               }),
                         display: 'flex',
                         flexDirection: 'column',
                         boxShadow: 3,
+                        userSelect: isResizing ? 'none' : 'auto',
                     }}
                     data-testid="chatbot-window"
                 >
@@ -345,6 +416,7 @@ export function ChatbotButton() {
                     <Box
                         sx={{
                             p: 2,
+                            pl: isMobile ? 2 : 5, // Add left padding for desktop to accommodate resize handle
                             borderBottom: '1px solid',
                             borderColor: 'grey.300',
                             display: 'flex',
@@ -352,7 +424,7 @@ export function ChatbotButton() {
                             alignItems: 'center',
                             backgroundColor: 'primary.main',
                             color: 'primary.contrastText',
-                            flexShrink: 0, // Prevent header from shrinking
+                            flexShrink: 0,
                         }}
                     >
                         <Typography variant="h6">{t('title')}</Typography>
@@ -646,6 +718,48 @@ export function ChatbotButton() {
                             {t('disclaimer')}
                         </Typography>
                     </Box>
+
+                    {/* Resize Handle - Desktop Only */}
+                    {!isMobile && (
+                        <Box
+                            onMouseDown={handleResizeStart}
+                            sx={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: 48,
+                                height: 48,
+                                cursor: 'nwse-resize',
+                                zIndex: 10,
+                                '&::after': {
+                                    content: '""',
+                                    position: 'absolute',
+                                    top: 6,
+                                    left: 6,
+                                    width: 20,
+                                    height: 20,
+                                    background: `repeating-linear-gradient(
+                                        -45deg,
+                                        transparent,
+                                        transparent 2px,
+                                        currentColor 2px,
+                                        currentColor 3px
+                                    )`,
+                                    color: 'rgba(255, 255, 255, 0.5)',
+                                    opacity: 0.7,
+                                    transition: 'opacity 0.2s ease, color 0.2s ease',
+                                    pointerEvents: 'none',
+                                    clipPath: 'polygon(0 0, 100% 0, 0 100%)',
+                                },
+                                '&:hover::after': {
+                                    opacity: 1,
+                                    color: 'rgba(255, 255, 255, 0.9)',
+                                },
+                            }}
+                            data-testid="chatbot-resize-handle"
+                            aria-label="Resize chatbot window"
+                        />
+                    )}
                 </Paper>
             </Collapse>
         </>
